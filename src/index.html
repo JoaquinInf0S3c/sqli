@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Buscar producto por ID</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      label {
+        font-weight: bold;
+      }
+      input[type="text"] {
+        width: 200px;
+        padding: 5px;
+      }
+      input[type="submit"] {
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      table {
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 8px;
+        border: 1px solid #ddd;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Buscar producto por ID</h1>
+    <form id="searchForm" action="/product" method="GET">
+      <label for="idInput">ID:</label>
+      <input type="text" id="idInput" name="id" required />
+      <input type="submit" value="Buscar" />
+    </form>
+
+    <div id="queryContainer"></div>
+    <div id="resultContainer"></div>
+
+    <script>
+      const searchForm = document.getElementById("searchForm");
+      const queryContainer = document.getElementById("queryContainer");
+      const resultContainer = document.getElementById("resultContainer");
+
+      searchForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const idInput = document.getElementById("idInput");
+        const id = idInput.value.trim();
+
+        if (!id) {
+          alert("Por favor, ingresa un ID válido.");
+          return;
+        }
+
+        queryContainer.textContent = `Consultando: SELECT * FROM products WHERE id = ${id}`;
+        resultContainer.innerHTML = "Cargando...";
+
+        fetch(`/product?id=${id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            const table = createTable(data);
+            resultContainer.innerHTML = "";
+            resultContainer.appendChild(table);
+          })
+          .catch((error) => {
+            console.error(error);
+            resultContainer.textContent = "Error al realizar la búsqueda.";
+          });
+      });
+
+      function createTable(data) {
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        const tbody = document.createElement("tbody");
+        const headers = Object.keys(data[0]);
+
+        // Create table header
+        const headerRow = document.createElement("tr");
+        headers.forEach((header) => {
+          const th = document.createElement("th");
+          th.textContent = header;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Create table rows
+        data.forEach((rowData) => {
+          const row = document.createElement("tr");
+          headers.forEach((header) => {
+            const cell = document.createElement("td");
+            cell.textContent = rowData[header];
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        return table;
+      }
+    </script>
+  </body>
+</html>
