@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Buscar producto por ID</title>
+    <title>Search Product by ID</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -33,14 +33,21 @@
       th {
         background-color: #f2f2f2;
       }
+      #queryContainer {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f2f2f2;
+        border: 1px solid #ddd;
+        font-family: Arial, sans-serif;
+      }
     </style>
   </head>
   <body>
-    <h1>Buscar producto por ID</h1>
+    <h1>Search Product by ID</h1>
     <form id="searchForm" action="/product" method="GET">
       <label for="idInput">ID:</label>
       <input type="text" id="idInput" name="id" required />
-      <input type="submit" value="Buscar" />
+      <input type="submit" value="Search" />
     </form>
 
     <div id="queryContainer"></div>
@@ -58,12 +65,12 @@
         const id = idInput.value.trim();
 
         if (!id) {
-          alert("Por favor, ingresa un ID válido.");
+          alert("Please enter a valid ID.");
           return;
         }
 
-        queryContainer.textContent = `Consultando: SELECT * FROM products WHERE id = ${id}`;
-        resultContainer.innerHTML = "Cargando...";
+        queryContainer.textContent = `Querying: SELECT * FROM products WHERE id = ${id}`;
+        resultContainer.innerHTML = "Loading...";
 
         fetch(`/product?id=${id}`)
           .then((response) => response.json())
@@ -74,7 +81,7 @@
           })
           .catch((error) => {
             console.error(error);
-            resultContainer.textContent = "Error al realizar la búsqueda.";
+            resultContainer.textContent = "Error performing search.";
           });
       });
 
