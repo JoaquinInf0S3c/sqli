@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      label {
+        font-weight: bold;
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 200px;
+        padding: 5px;
+      }
+      input[type="submit"] {
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      #messageContainer {
+        margin-top: 20px;
+        padding: 10px;
+        font-weight: bold;
+        display: none;
+      }
+      #successMessage {
+        color: green;
+      }
+      #errorMessage {
+        color: red;
+      }
+      #queryContainer {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f2f2f2;
+        border: 1px solid #ddd;
+        font-family: Arial, sans-serif;
+      }
+      #loggedInUserContainer {
+        margin-top: 20px;
+        font-weight: bold;
+      }
+      nav {
+        margin-bottom: 20px;
+      }
+      nav a {
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/login">Login</a>
+    </nav>
+
+    <h1>Login</h1>
+    <form id="loginForm" action="/login" method="POST">
+      <label for="usernameInput">Username:</label>
+      <input type="text" id="usernameInput" name="username" required />
+      <br />
+      <label for="passwordInput">Password:</label>
+      <input type="password" id="passwordInput" name="password" required />
+      <br />
+      <input type="submit" value="Login" />
+    </form>
+
+    <pre id="queryContainer"></pre>
+
+    <div id="messageContainer">
+      <span id="successMessage"></span>
+      <span id="errorMessage"></span>
+    </div>
+
+    <div id="loggedInUserContainer"></div>
+
+    <script>
+      const loginForm = document.getElementById("loginForm");
+      const messageContainer = document.getElementById("messageContainer");
+      const successMessage = document.getElementById("successMessage");
+      const errorMessage = document.getElementById("errorMessage");
+      const queryContainer = document.getElementById("queryContainer");
+      const loggedInUserContainer = document.getElementById(
+        "loggedInUserContainer"
+      );
+
+      loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const usernameInput = document.getElementById("usernameInput");
+        const passwordInput = document.getElementById("passwordInput");
+
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!username || !password) {
+          alert("Please enter a username and password.");
+          return;
+        }
+
+        const query = `SELECT * FROM users WHERE name = '${username}' AND password = '${password}'`;
+        queryContainer.textContent = `Querying: ${query}`;
+
+        fetch("/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Login failed");
+            }
+          })
+          .then((data) => {
+            successMessage.textContent = "Login successful";
+            errorMessage.textContent = "";
+            messageContainer.style.display = "block";
+            messageContainer.style.color = "green";
+            loggedInUserContainer.textContent = `Logged in as: ${data.username}`;
+          })
+          .catch((error) => {
+            console.error(error);
+            successMessage.textContent = "";
+            errorMessage.textContent = "Login failed";
+            messageContainer.style.display = "block";
+            messageContainer.style.color = "red";
+            loggedInUserContainer.textContent = "";
+          });
+      });
+    </script>
+  </body>
+</html>

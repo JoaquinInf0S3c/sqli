@@ -40,9 +40,20 @@
         border: 1px solid #ddd;
         font-family: Arial, sans-serif;
       }
+      nav {
+        margin-bottom: 20px;
+      }
+      nav a {
+        margin-right: 10px;
+      }
     </style>
   </head>
   <body>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/login">Login</a>
+    </nav>
+
     <h1>Search Product by ID</h1>
     <form id="searchForm" action="/product" method="GET">
       <label for="idInput">ID:</label>
